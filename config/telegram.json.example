@@ -1,0 +1,8 @@
+{
+    "bot_token": "PUT_YOUR_BOT_TOKEN_HERE",
+    "chat_id": "PUT_YOUR_CHAT_ID_HERE",
+    "enabled": true,
+    "send_top_n": 20,
+    "attach_csv": true,
+    "proxy": "auto"
+}
