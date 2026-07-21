@@ -1,0 +1,44 @@
+name: IranScanner Daily
+
+on:
+  # اجرای خودکار هر روز - ساعت‌ها به وقت UTC هستند (وقت ایران = UTC + 3:30)
+  # این نمونه ساعت 12:35 ظهر به وقت ایران (بعد از بسته شدن بازار) اجرا می‌شود
+  # روزهای هفته: شنبه(6) یکشنبه(0) دوشنبه(1) سه‌شنبه(2) چهارشنبه(3) - بازار ایران
+  schedule:
+    - cron: "5 9 * * 6,0,1,2,3"
+
+  # امکان اجرای دستی از تب Actions در گیت‌هاب (برای تست)
+  workflow_dispatch:
+
+jobs:
+  run-scanner:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: دریافت کد پروژه
+        uses: actions/checkout@v4
+
+      - name: نصب پایتون
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: نصب وابستگی‌ها
+        run: pip install -r requirements.txt
+
+      - name: اجرای اسکنر روزانه
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_PROXY: "direct"
+        run: python daily_runner.py
+
+      - name: آپلود گزارش‌ها به‌عنوان ضمیمه (اختیاری)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ github.run_number }}
+          path: |
+            reports/
+            logs/
+          retention-days: 30
