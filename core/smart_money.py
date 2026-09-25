@@ -1,40 +1,129 @@
-class SmartMoney:
+class SmartMoneyDetector:
 
     def __init__(self):
-        print("Smart Money Engine initialized")
 
-    def analyze(self, symbol_data):
+        print("Smart Money Detector initialized")
 
-        results = []
+    def detect(self, s):
 
-        for s in symbol_data:
+        score = 0
 
-            volume = s.get("volume", 0)
-            price = s.get("price", 0)
+        reasons = []
 
-            score = 0
-            reasons = []
+        # -----------------------
+        # Buyer Power
+        # -----------------------
 
-            # حجم بالا
-            if volume > 10000:
-                score += 30
-                reasons.append("high volume")
+        if s.buyer_power >= 2:
 
-            # قیمت معتبر
-            if price > 0:
-                score += 10
-                reasons.append("valid price")
+            score += 20
 
-            # قدرت اولیه پول هوشمند
-            if volume > 50000:
-                score += 40
-                reasons.append("possible smart money")
+            reasons.append("BuyerPower")
 
-            if score >= 50:
-                results.append({
-                    "symbol": s.get("symbol"),
-                    "score": score,
-                    "reasons": reasons
-                })
+        elif s.buyer_power >= 1.5:
 
-        return results
+            score += 10
+
+        # -----------------------
+        # KH 3/10
+        # -----------------------
+
+        if s.kh_3_10 >= 1.2:
+
+            score += 15
+
+            reasons.append("KH3/10")
+
+        # -----------------------
+        # Sarane
+        # -----------------------
+
+        if s.sarane3_10 >= 1.2:
+
+            score += 10
+
+            reasons.append("Sarane")
+
+        # -----------------------
+        # Money Flow
+        # -----------------------
+
+        if s.money_flow_power >= 1.2:
+
+            score += 15
+
+            reasons.append("MoneyFlow")
+
+        # -----------------------
+        # Volume
+        # -----------------------
+
+        if s.volume_ratio >= 2:
+
+            score += 15
+
+            reasons.append("Volume")
+
+        elif s.volume_ratio >= 1.5:
+
+            score += 8
+
+        # -----------------------
+        # RR
+        # -----------------------
+
+        if s.rr >= 2.5:
+
+            score += 10
+
+            reasons.append("RR")
+
+        # -----------------------
+        # Support Power
+        # -----------------------
+
+        if s.rr_power >= 2:
+
+            score += 10
+
+            reasons.append("Support")
+
+        # -----------------------
+        # Trend
+        # -----------------------
+
+        if getattr(s, "uptrend", False):
+
+            score += 5
+
+            reasons.append("Trend")
+
+        # -----------------------
+        # Breakout
+        # -----------------------
+
+        if getattr(s, "breakout", False):
+
+            score += 5
+
+            reasons.append("Breakout")
+
+        # -----------------------
+        # Near Support
+        # -----------------------
+
+        if getattr(s, "near_support", False):
+
+            score += 5
+
+            reasons.append("NearSupport")
+
+        s.smart_money_score = score
+
+        s.smart_money_reason = " | ".join(reasons)
+
+        s.smart_money = score >= 60
+
+        return s
+
+

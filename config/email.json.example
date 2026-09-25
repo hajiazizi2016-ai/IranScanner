@@ -1,0 +1,8 @@
+{
+    "enabled": false,
+    "sender_email": "PUT_YOUR_GMAIL_HERE@gmail.com",
+    "app_password": "PUT_YOUR_16_CHAR_APP_PASSWORD_HERE",
+    "recipient_email": "PUT_RECIPIENT_EMAIL_HERE",
+    "smtp_host": "smtp.gmail.com",
+    "smtp_port": 587
+}

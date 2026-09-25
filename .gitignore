@@ -2,3 +2,7 @@
 __pycache__/
 *.pyc
 logs/
+config/telegram.json
+config/email.json
+reports/
+*.db

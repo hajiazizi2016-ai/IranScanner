@@ -1,0 +1,44 @@
+name: IranScanner Daily
+
+on:
+  schedule:
+    - cron: "5 9 * * 6,0,1,2,3"
+  workflow_dispatch:
+
+jobs:
+  run-scanner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: دریافت کد پروژه
+        uses: actions/checkout@v4
+      - name: نصب پایتون
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: نصب وابستگی‌ها
+        run: pip install -r requirements.txt
+      - name: بررسی تنظیمات اتصال TSETMC
+        env:
+          TSE_PROXY: ${{ secrets.TSE_PROXY }}
+        run: |
+          if [ -n "$TSE_PROXY" ]; then
+            echo "TSE_PROXY configured"
+          else
+            echo "TSE_PROXY not configured - direct connection will be used"
+          fi
+      - name: اجرای اسکنر روزانه
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_PROXY: "direct"
+          TSE_PROXY: ${{ secrets.TSE_PROXY }}
+        run: python daily_runner.py
+      - name: آپلود گزارش‌ها
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ github.run_number }}
+          path: |
+            reports/
+            logs/
+          retention-days: 30
